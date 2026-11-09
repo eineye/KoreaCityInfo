@@ -3,6 +3,7 @@
 //  - general districts (일반구) merged into their parent city (e.g. 수원시 4구 → 수원시)
 //  - 청원군 merged into 청주시 (2014), 군위군 moved to 대구광역시 (2023)
 //  - renamed: 인천 남구 → 미추홀구, 강원특별자치도, 전북특별자치도
+//  - Dokdo (독도) added to 울릉군
 // Usage: npm i d3-geo topojson-server topojson-client && node scripts/build-map.mjs <municipalities_geo.json>
 import fs from 'node:fs';
 import { geoMercator, geoPath } from 'd3-geo';
@@ -41,13 +42,31 @@ const NAME_OVERRIDES = {
   '37310': ['군위군', 'Gunwi-gun']
 };
 
+// Dokdo (독도, 울릉군 울릉읍 독도리) is missing from the simplified KOSTAT geometry: add its two main islets
+// (서도 Seodo, 동도 Dongdo) as small polygons at their real positions and attach them to 울릉군.
+const DOKDO = { ko: '독도', en: 'Dokdo', municipality: '37430', islets: [[131.8645, 37.2426, 0.0024], [131.8697, 37.2409, 0.0019]] };
+const islet = ([lon, lat, r]) => {
+  const ring = [];
+  for (let i = 0; i <= 12; i++) {
+    const a = (-i / 12) * Math.PI * 2; // clockwise ring (d3 spherical winding for an exterior ring)
+    ring.push([lon + r * Math.cos(a) / Math.cos((lat * Math.PI) / 180), lat + r * Math.sin(a)]);
+  }
+  return [ring];
+};
+for (const f of src.features) {
+  if (f.properties.code !== DOKDO.municipality) continue;
+  const g = f.geometry;
+  const polys = g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates];
+  f.geometry = { type: 'MultiPolygon', coordinates: [...polys, ...DOKDO.islets.map(islet)] };
+}
+
 const features = src.features.map((f) => {
   const code = remap(f.properties.code);
   const [ko, en] = NAME_OVERRIDES[code] || [f.properties.name, f.properties.name_eng];
   return { ...f, properties: { code, province: provinceOf(code), ko, en } };
 });
 
-const W = 800, H = 1000;
+const W = 900, H = 1000;
 const projection = geoMercator().fitExtent([[20, 20], [W - 20, H - 20]], { type: 'FeatureCollection', features });
 const path = geoPath(projection);
 
@@ -84,7 +103,12 @@ for (const [code, gs] of group((p) => p.province)) {
 }
 provinces.sort((a, b) => a.code.localeCompare(b.code));
 
-const out = { width: W, height: H, source: 'KOSTAT 2013 via southkorea-maps (adjusted to current boundaries)', provinces, municipalities };
+// Point markers for places too small to see at map scale
+const mlat = DOKDO.islets[0][1];
+const [mx, my] = projection([(DOKDO.islets[0][0] + DOKDO.islets[1][0]) / 2, (mlat + DOKDO.islets[1][1]) / 2]);
+const markers = [{ id: 'dokdo', ko: DOKDO.ko, en: DOKDO.en, province: '37', municipality: DOKDO.municipality, c: [r(mx), r(my)] }];
+
+const out = { width: W, height: H, source: 'KOSTAT 2013 via southkorea-maps (adjusted to current boundaries) + Dokdo', provinces, municipalities, markers };
 fs.writeFileSync(new URL('../www/data/korea-map.json', import.meta.url), JSON.stringify(out));
 const counts = Object.fromEntries(provinces.map((p) => [p.en, municipalities.filter((m) => m.province === p.code).length]));
 console.log('provinces', provinces.length, 'municipalities', municipalities.length, counts);
