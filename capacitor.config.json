@@ -1,0 +1,6 @@
+{
+  "appId": "com.koreacity.info",
+  "appName": "Korea City Info",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}
