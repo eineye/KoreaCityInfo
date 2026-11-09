@@ -219,6 +219,14 @@
     {
       "id": "21090",
       "url": "https://www.haeundae.go.kr"
+    },
+    {
+      "id": "37430",
+      "url": "https://www.ulleung.go.kr",
+      "intro": {
+        "en": "Ulleung-gun covers the volcanic island of Ulleungdo and Dokdo, Korea's easternmost islands in the East Sea (Dokdo-ri, Ulleung-eup).",
+        "ko": "울릉군은 동해의 화산섬 울릉도와 대한민국 최동단 섬 독도(울릉읍 독도리)로 이루어져 있습니다."
+      }
     }
   ],
   "mayors": [

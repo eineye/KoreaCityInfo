@@ -17,6 +17,14 @@ const el = (tag, attrs = {}) => {
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 const MAX_ZOOM = 6;
+// Remote islands left out of the province framing (still reachable by panning / selecting them)
+const REMOTE = new Set(['37430']); // 울릉군 (Ulleungdo + Dokdo)
+
+const union = (boxes) => {
+  const x0 = Math.min(...boxes.map((b) => b[0])), y0 = Math.min(...boxes.map((b) => b[1]));
+  const x1 = Math.max(...boxes.map((b) => b[0] + b[2])), y1 = Math.max(...boxes.map((b) => b[1] + b[3]));
+  return [x0, y0, x1 - x0, y1 - y0];
+};
 const DRAG_THRESHOLD = 6; // px before a press becomes a drag (so taps still select regions)
 
 // Hand-tuned label positions for crowded areas (map units, 800×1000 canvas)
@@ -29,14 +37,17 @@ export class KoreaMap {
     this.onMunicipality = onMunicipality;
     this.full = [0, 0, data.width, data.height];
     this.base = [...this.full];
+    this.bounds = [...this.full];
     this.vb = [...this.full];
     this.svg = el('svg', { viewBox: this.full.join(' '), class: 'korea-map', role: 'img', 'aria-label': 'Map of Korea', tabindex: -1 });
     this.gProv = el('g', { class: 'g-prov' });
     this.gMuni = el('g', { class: 'g-muni' });
     this.gLabel = el('g', { class: 'g-label' });
-    this.svg.append(this.gProv, this.gMuni, this.gLabel);
+    this.gMarker = el('g', { class: 'g-marker' });
+    this.svg.append(this.gProv, this.gMuni, this.gLabel, this.gMarker);
     this.controls = this.buildControls();
     container.replaceChildren(this.svg, this.controls);
+    container.style.aspectRatio = `${data.width} / ${data.height}`;
 
     for (const p of data.provinces) {
       const path = el('path', { d: p.d, class: 'prov', 'data-code': p.code, tabindex: 0, style: `--hue:${hue(p.code)}` });
@@ -45,9 +56,21 @@ export class KoreaMap {
       path.addEventListener('keydown', (e) => e.key === 'Enter' && this.onProvince?.(p.code));
       this.gProv.append(path);
     }
+    // Islands too small to see at map scale (Dokdo): a dot + name that stays the same size on screen
+    for (const m of data.markers || []) {
+      const g = el('g', { class: 'marker', 'data-code': m.municipality, tabindex: 0, role: 'link' });
+      g.append(el('title'), el('circle', { cx: m.c[0], cy: m.c[1], class: 'marker-hit' }), el('circle', { cx: m.c[0], cy: m.c[1], class: 'marker-dot' }), el('text', { class: 'marker-label' }));
+      const go = (e) => { e.stopPropagation(); this.onMunicipality?.(m.province, m.municipality); };
+      g.addEventListener('click', go);
+      g.addEventListener('keydown', (e) => e.key === 'Enter' && go(e));
+      g.marker = m;
+      this.gMarker.append(g);
+    }
     this.province = null;
     this.selected = null;
     this.bindGestures();
+    this.updateMarkers();
+    addEventListener('resize', () => this.updateMarkers());
   }
 
   refreshTitles() {
@@ -65,7 +88,7 @@ export class KoreaMap {
     this.gProv.querySelectorAll('.prov').forEach((p) => p.classList.remove('dim', 'active'));
     this.gMuni.replaceChildren();
     this.drawLabels(this.data.provinces, 15, true);
-    this.setBase(this.full);
+    this.setBase(this.full, this.full);
     this.refreshTitles();
   }
 
@@ -87,19 +110,23 @@ export class KoreaMap {
         path.addEventListener('keydown', (e) => e.key === 'Enter' && this.onMunicipality?.(code, m.code));
         this.gMuni.append(path);
       });
-      const [x, y, w, h] = prov.bbox;
-      const pad = Math.max(w, h) * 0.08 + 4;
-      // keep the map's aspect ratio so the province fills the frame
-      const ar = this.full[2] / this.full[3];
-      let W = w + pad * 2, H = h + pad * 2;
-      if (W / H > ar) H = W / ar; else W = H * ar;
-      this.drawLabels(munis, Math.max(1.6, W / 58), false);
-      this.setBase([x + w / 2 - W / 2, y + h / 2 - H / 2, W, H]);
+      const main = munis.filter((m) => !REMOTE.has(m.code));
+      const base = this.frame(union((main.length ? main : munis).map((m) => m.bbox)));
+      // panning may reach the whole province (e.g. Ulleungdo and Dokdo east of Gyeongsangbuk-do)
+      const all = union([...munis.map((m) => m.bbox), ...(this.data.markers || []).filter((k) => k.province === code).map((k) => [k.c[0], k.c[1], 0, 0])]);
+      // margin of a quarter view around the outermost islands so they can be centred, not stuck to an edge
+      const bounds = union([base, this.pad(all, base[3] * 0.25)]);
+      this.drawLabels(munis, Math.max(1.6, base[2] / 58), false);
+      this.setBase(base, bounds, muniCode ? this.reveal(base, muniCode, base, bounds) : base);
       this.refreshTitles();
+    } else if (muniCode) {
+      const target = this.reveal(this.vb, muniCode);
+      if (target !== this.vb) this.animateTo(target);
     }
     this.selected = muniCode;
     this.gMuni.querySelectorAll('.muni').forEach((p) => p.classList.toggle('selected', p.dataset.code === muniCode));
     this.gLabel.querySelectorAll('text').forEach((t) => t.classList.toggle('selected', t.dataset.code === muniCode));
+    this.updateMarkers();
   }
 
   drawLabels(regions, size, isProvince) {
@@ -125,31 +152,80 @@ export class KoreaMap {
     }
   }
 
+  updateMarkers() {
+    // map units per screen pixel, so the marker keeps the same on-screen size at any zoom / screen width
+    const { s } = this.metrics();
+    const u = s > 0 ? 1 / s : this.vb[2] / 900;
+    for (const g of this.gMarker.children) {
+      const [x, y] = g.marker.c;
+      const [hit, dot, text] = g.querySelectorAll('circle, text');
+      hit.setAttribute('r', 16 * u);
+      dot.setAttribute('r', 5 * u);
+      dot.style.strokeWidth = 1.6 * u;
+      text.setAttribute('x', x - 8 * u);
+      text.setAttribute('y', y + 1 * u);
+      text.setAttribute('font-size', 12 * u);
+      text.style.strokeWidth = 12 * u * 0.22;
+      text.textContent = regionName(g.marker);
+      g.querySelector('title').textContent = regionName(g.marker);
+      g.classList.toggle('selected', this.selected === g.marker.municipality);
+    }
+  }
+
   relabel() {
     const regions = this.province ? this.data.municipalities.filter((m) => m.province === this.province) : this.data.provinces;
     this.gLabel.querySelectorAll('text').forEach((t, i) => { t.textContent = shortName(regions[i], !!this.province); });
     this.updateLabels();
+    this.updateMarkers();
     this.refreshTitles();
   }
 
   /* ---------- view handling ---------- */
-  setBase(base) {
+  pad([x, y, w, h], p) { return [x - p, y - p, w + p * 2, h + p * 2]; }
+
+  // padded box grown to the map's aspect ratio, so a province fills the frame
+  frame(box) {
+    const [x, y, w, h] = box;
+    const pad = Math.max(w, h) * 0.08 + 4;
+    const ar = this.full[2] / this.full[3];
+    let W = w + pad * 2, H = h + pad * 2;
+    if (W / H > ar) H = W / ar; else W = H * ar;
+    return [x + w / 2 - W / 2, y + h / 2 - H / 2, W, H];
+  }
+
+  // view that shows a municipality, or the given view if it is already fully visible
+  reveal(view, code, base = this.base, bounds = this.bounds) {
+    const m = this.region(code);
+    if (!m) return view;
+    const [x, y, w, h] = view, [mx, my, mw, mh] = m.bbox;
+    if (mx >= x && my >= y && mx + mw <= x + w && my + mh <= y + h) return view;
+    // frame the municipality (zooming in if it is small), never zooming out beyond the current view
+    const fw = clamp(this.frame(m.bbox)[2] * 1.5, base[2] / MAX_ZOOM, w);
+    const fh = fw * (h / w);
+    return this.clampView([mx + mw / 2 - fw / 2, my + mh / 2 - fh / 2, fw], base, bounds);
+  }
+
+  setBase(base, bounds = base, view = base) {
     this.base = base;
-    this.animateTo(base, false);
+    this.bounds = bounds;
+    this.animateTo(view, false);
   }
 
   // Clamp a [x, y, w, h] view to the zoom limits and to the base view
-  clampView([x, y, w]) {
-    const [bx, by, bw, bh] = this.base;
+  // zoom limits come from the base view, pan limits from the bounds (base view plus any remote islands)
+  clampView([x, y, w], base = this.base, bounds = this.bounds) {
+    const [, , bw, bh] = base;
+    const [lx, ly, lw, lh] = bounds;
     w = clamp(w, bw / MAX_ZOOM, bw);
     const h = w * (bh / bw);
-    return [clamp(x, bx, bx + bw - w), clamp(y, by, by + bh - h), w, h];
+    return [clamp(x, lx, lx + lw - w), clamp(y, ly, ly + lh - h), w, h];
   }
 
   setView(v) {
     this.vb = this.clampView(v);
     this.svg.setAttribute('viewBox', this.vb.join(' '));
     this.updateLabels();
+    this.updateMarkers();
     this.updateControls();
   }
 
@@ -165,6 +241,7 @@ export class KoreaMap {
       this.vb = from.map((v, i) => v + (target[i] - v) * e);
       this.svg.setAttribute('viewBox', this.vb.join(' '));
       if (scaleLabels) this.updateLabels();
+      this.updateMarkers();
       if (k < 1) this.raf = requestAnimationFrame(step);
       else this.updateControls();
     };
@@ -218,11 +295,14 @@ export class KoreaMap {
 
   updateControls() {
     const z = this.zoom;
+    const atBase = z <= 1.01 && this.vb.every((v, i) => Math.abs(v - this.base[i]) < this.base[2] * 0.01);
+    const pannable = z > 1.01 || this.bounds[2] > this.base[2] + 1 || this.bounds[3] > this.base[3] + 1;
     this.btnIn.disabled = z >= MAX_ZOOM - 0.01;
-    this.btnOut.disabled = this.btnReset.disabled = z <= 1.01;
+    this.btnOut.disabled = z <= 1.01;
+    this.btnReset.disabled = atBase;
     // at the base view let one-finger swipes scroll the page; once zoomed, the map owns touch gestures
     this.svg.style.touchAction = z > 1.01 ? 'none' : 'pan-y';
-    this.svg.classList.toggle('zoomed', z > 1.01);
+    this.svg.classList.toggle('zoomed', pannable);
   }
 
   bindGestures() {
