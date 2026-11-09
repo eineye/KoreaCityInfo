@@ -2,6 +2,7 @@ import { CONFIG } from './config.js';
 
 const STRINGS = {
   en: {
+    overview: 'Overview', selectRegion: 'Select a region', regionMenu: 'Region menu', allOf: 'All of {r}',
     tagline: 'Discover the cities and provinces of Korea',
     menu: 'Menu', home: 'Korea Map', mayors: "Mayor's Greetings", festivals: 'Festivals', investment: 'Investment',
     youtube: 'YouTube', facebook: 'Facebook', x: 'X', language: 'Language',
@@ -11,7 +12,7 @@ const STRINGS = {
     testNotice: 'Test version: use a temporary ID/password. Social login will be added later.',
     noAccount: "Don't have an account?", haveAccount: 'Already have an account?',
     loginFailed: 'Wrong ID or password.', userExists: 'This ID is already taken.', signupDone: 'Account created. You are now logged in.',
-    mapHint: 'Tap a province to explore its cities, counties and districts.',
+    mapHint: 'Tap a province on the map or choose a region.',
     back: 'Back', allKorea: 'All Korea', officialSite: 'Official website', visit: 'Visit',
     findSite: 'Find official website', localGovs: 'Cities · Counties · Districts',
     related: 'Related', noItems: 'Nothing here yet.', allRegions: 'All regions', filter: 'Region',
@@ -27,6 +28,7 @@ const STRINGS = {
     sample: 'Sample', period: 'Period', sector: 'Sector', notRegistered: 'Not registered yet'
   },
   ko: {
+    overview: '지역 소개', selectRegion: '지역 선택', regionMenu: '지역 메뉴', allOf: '{r} 전체',
     tagline: '대한민국의 도시와 지역을 만나보세요',
     menu: '메뉴', home: '한국 지도', mayors: '단체장 인사말', festivals: '축제', investment: '투자유치',
     youtube: '유튜브', facebook: '페이스북', x: 'X', language: '언어',
@@ -36,7 +38,7 @@ const STRINGS = {
     testNotice: '테스트 버전: 임시 아이디/비밀번호를 사용합니다. 소셜 로그인은 추후 지원됩니다.',
     noAccount: '계정이 없으신가요?', haveAccount: '이미 계정이 있으신가요?',
     loginFailed: '아이디 또는 비밀번호가 올바르지 않습니다.', userExists: '이미 사용 중인 아이디입니다.', signupDone: '가입이 완료되어 로그인되었습니다.',
-    mapHint: '시·도를 누르면 시·군·구를 볼 수 있습니다.',
+    mapHint: '지도에서 시·도를 누르거나 지역을 선택하세요.',
     back: '뒤로', allKorea: '전국', officialSite: '공식 홈페이지', visit: '바로가기',
     findSite: '공식 홈페이지 찾기', localGovs: '시 · 군 · 구',
     related: '관련 정보', noItems: '등록된 내용이 없습니다.', allRegions: '전체 지역', filter: '지역',
@@ -52,6 +54,8 @@ const STRINGS = {
     sample: '샘플', period: '기간', sector: '분야', notRegistered: '아직 등록되지 않음'
   },
   ja: {
+    overview: '地域紹介', selectRegion: '地域を選択', regionMenu: '地域メニュー', allOf: '{r} 全体', youtube: 'YouTube', facebook: 'Facebook', x: 'X',
+    login: 'ログイン', signup: '新規登録', logout: 'ログアウト', officialSite: '公式サイト', findSite: '公式サイトを探す', openProfile: '{p}ページを開く', search: '地域を検索…', sample: 'サンプル',
     tagline: '韓国の都市と地域を発見しよう',
     menu: 'メニュー', home: '韓国地図', mayors: '首長あいさつ', festivals: 'お祭り', investment: '投資誘致',
     language: '言語', login: 'ログイン', logout: 'ログアウト', signup: '新規登録', admin: '管理者',
@@ -61,6 +65,8 @@ const STRINGS = {
     related: '関連情報', noItems: 'まだ登録がありません。', allRegions: 'すべての地域', filter: '地域', close: '閉じる'
   },
   zh: {
+    overview: '地区介绍', selectRegion: '选择地区', regionMenu: '地区菜单', allOf: '{r} 全部', youtube: 'YouTube', facebook: 'Facebook', x: 'X',
+    officialSite: '官方网站', findSite: '查找官方网站', openProfile: '打开{p}页面', search: '搜索地区…', sample: '示例',
     tagline: '探索韩国的城市与地区',
     menu: '菜单', home: '韩国地图', mayors: '市长致辞', festivals: '节庆', investment: '招商引资',
     language: '语言', login: '登录', logout: '退出', signup: '注册', admin: '管理员',

@@ -6,7 +6,9 @@ import { t, L, getLang, setLang, regionName } from './i18n.js';
 import { $, h, modal, toast, safeUrl, youtubeId, bannerCard, regionColor, initial } from './ui.js';
 
 const view = $('#view');
-let mapData, map, mapHost, bannerTimer;
+let mapData, map, mapHost;
+let current = { prov: null, muni: null, section: 'overview' };
+let keepDrawer = false;
 
 export const regions = {
   get: (code) => (code?.length === 2 ? mapData.provinces : mapData.municipalities).find((r) => r.code === code) || null,
@@ -21,11 +23,19 @@ export const regions = {
   }
 };
 
-const SECTIONS = {
-  mayors: { col: 'mayors', title: (i) => L(i.name), sub: (i) => L(i.position), body: (i) => L(i.message) },
-  festivals: { col: 'festivals', title: (i) => L(i.title), sub: (i) => L(i.period), body: (i) => L(i.description) },
-  investment: { col: 'investments', title: (i) => L(i.title), sub: (i) => L(i.sector), body: (i) => L(i.description) }
-};
+/* Detail menu shown for a selected region (province or municipality) */
+const SECTIONS = [
+  { key: 'overview', icon: 'ℹ️' },
+  { key: 'mayors', icon: '🏛️', col: 'mayors', title: (i) => L(i.name), sub: (i) => L(i.position), body: (i) => L(i.message) },
+  { key: 'festivals', icon: '🎉', col: 'festivals', title: (i) => L(i.title), sub: (i) => L(i.period), body: (i) => L(i.description) },
+  { key: 'investment', icon: '📈', col: 'investments', title: (i) => L(i.title), sub: (i) => L(i.sector), body: (i) => L(i.description) },
+  { key: 'youtube', icon: '▶️', platform: 'youtube' },
+  { key: 'facebook', icon: 'ⓕ', platform: 'facebook' },
+  { key: 'x', icon: '𝕏', platform: 'x' }
+];
+const section = (key) => SECTIONS.find((s) => s.key === key) || SECTIONS[0];
+
+const regionHash = (prov, muni, sec) => `#/map/${prov}${muni ? '/' + muni : ''}${sec && sec !== 'overview' ? '?s=' + sec : ''}`;
 
 /* ---------- boot ---------- */
 async function boot() {
@@ -33,21 +43,26 @@ async function boot() {
   [mapData] = await Promise.all([fetch('data/korea-map.json').then((r) => r.json()), store.init()]);
   mapHost = h('div', { class: 'map-host' });
   map = new KoreaMap(mapHost, mapData, {
-    onProvince: (code) => (location.hash = `#/map/${code}`),
-    onMunicipality: (p, m) => (location.hash = `#/map/${p}/${m}`)
+    onProvince: (code) => (location.hash = regionHash(code)),
+    onMunicipality: (p, m) => (location.hash = regionHash(p, m, current.section))
   });
-  buildChrome();
-  auth.onChange(() => { buildDrawer(); });
+  $('#menu-btn').onclick = () => toggleDrawer(true);
+  $('#drawer-backdrop').onclick = () => toggleDrawer(false);
+  $('#brand').onclick = (e) => { e.preventDefault(); location.hash = '#/'; };
+  $('#lang-btn').onclick = () => {
+    const langs = CONFIG.languages.map((l) => l.code);
+    changeLang(langs[(langs.indexOf(getLang()) + 1) % langs.length]);
+  };
+  auth.onChange(() => buildDrawer());
   addEventListener('hashchange', route);
   route();
 }
 
-/* ---------- header + hamburger drawer ---------- */
-function buildChrome() {
-  $('#menu-btn').onclick = () => toggleDrawer(true);
-  $('#drawer-backdrop').onclick = () => toggleDrawer(false);
-  $('#brand').onclick = (e) => { e.preventDefault(); location.hash = '#/'; };
-  buildDrawer();
+function changeLang(code) {
+  setLang(code);
+  map.relabel();
+  keepDrawer = document.body.classList.contains('drawer-open');
+  route();
 }
 
 function toggleDrawer(open) {
@@ -55,191 +70,213 @@ function toggleDrawer(open) {
   $('#menu-btn').setAttribute('aria-expanded', open);
 }
 
+/* ---------- hamburger drawer ----------
+   top:    language · log in / sign up (or user · admin · log out)
+   middle: region selection (provinces → cities/counties/districts)
+   bottom: detail menu of the selected region */
 function buildDrawer() {
   const user = auth.user();
-  const link = (hash, icon, label) => h('a', { href: hash, class: 'drawer-link', onclick: () => toggleDrawer(false) }, h('span', { class: 'ico', 'aria-hidden': 'true' }, icon), label);
-  const nav = $('#drawer');
-  nav.replaceChildren(...[
-    h('div', { class: 'drawer-head' },
-      h('strong', {}, CONFIG.appName),
-      h('button', { class: 'icon-btn', 'aria-label': t('close'), onclick: () => toggleDrawer(false) }, '✕')),
-    user ? h('div', { class: 'drawer-user' }, '👤 ', user.name, user.role === 'admin' ? h('span', { class: 'chip chip-badge' }, 'admin') : null) : null,
-    link('#/', '🗺️', t('home')),
-    link('#/mayors', '🏛️', t('mayors')),
-    link('#/festivals', '🎉', t('festivals')),
-    link('#/investment', '📈', t('investment')),
-    h('div', { class: 'drawer-sep' }),
-    link('#/youtube', '▶️', t('youtube')),
-    link('#/facebook', 'ⓕ', t('facebook')),
-    link('#/x', '𝕏', t('x')),
-    h('div', { class: 'drawer-sep' }),
-    h('label', { class: 'drawer-lang' }, h('span', {}, '🌐 ', t('language')),
-      h('select', { onchange: (e) => { setLang(e.target.value); buildDrawer(); map.relabel(); route(); } },
+  const { prov, muni, section: sec } = current;
+  const close = () => toggleDrawer(false);
+  const stay = () => { keepDrawer = true; };
+
+  const top = h('div', { class: 'drawer-top' },
+    h('label', { class: 'drawer-lang' }, h('span', { 'aria-hidden': 'true' }, '🌐'),
+      h('select', { 'aria-label': t('language'), onchange: (e) => changeLang(e.target.value) },
         CONFIG.languages.map((l) => h('option', { value: l.code, selected: l.code === getLang() }, l.label)))),
-    h('div', { class: 'drawer-sep' }),
     user
-      ? [user.role === 'admin' && (CONFIG.showAdminInApp || !window.Capacitor) ? link('#/admin', '⚙️', t('admin')) : null,
-         h('button', { class: 'drawer-link', onclick: () => { auth.logout(); toggleDrawer(false); toast(t('logout')); route(); } }, h('span', { class: 'ico' }, '↩'), t('logout'))]
-      : [link('#/login', '🔑', t('login')), link('#/signup', '✍️', t('signup'))]
-  ].flat().filter(Boolean));
+      ? h('div', { class: 'drawer-auth' },
+          h('span', { class: 'drawer-user' }, '👤 ', user.name),
+          user.role === 'admin' && (CONFIG.showAdminInApp || !window.Capacitor) ? h('a', { class: 'btn small', href: '#/admin', onclick: close }, '⚙️ ', t('admin')) : null,
+          h('button', { class: 'btn small', onclick: () => { auth.logout(); close(); toast(t('logout')); route(); } }, t('logout')))
+      : h('div', { class: 'drawer-auth' },
+          h('a', { class: 'btn small primary', href: '#/login', onclick: close }, t('login')),
+          h('a', { class: 'btn small', href: '#/signup', onclick: close }, t('signup'))));
+
+  const provGrid = h('div', { class: 'drawer-provs' }, regions.provinces().map((p) =>
+    h('a', { href: regionHash(p.code), class: 'drawer-prov' + (p.code === prov ? ' on' : ''), style: { '--c': regionColor(p.code) }, onclick: stay }, regionName(p))));
+
+  const muniSelect = prov && regions.municipalities(prov).length > 1
+    ? h('label', { class: 'drawer-muni' }, h('span', {}, t('localGovs')),
+        h('select', { class: 'input', onchange: (e) => { stay(); location.hash = regionHash(prov, e.target.value || null, sec); } },
+          h('option', { value: '' }, t('allOf', { r: regionName(regions.get(prov)) })),
+          sortedMunis(prov).map((m) => h('option', { value: m.code, selected: m.code === muni }, regionName(m)))))
+    : null;
+
+  const selected = muni || prov;
+  const detail = selected
+    ? h('div', { class: 'drawer-detail' },
+        h('div', { class: 'drawer-label' }, '📍 ', regions.label(selected)),
+        SECTIONS.map((s) => h('a', { href: regionHash(prov, muni, s.key), class: 'drawer-link' + (s.key === sec ? ' current' : ''), onclick: close },
+          h('span', { class: 'ico', 'aria-hidden': 'true' }, s.icon), t(s.key), countBadge(s, selected))))
+    : null;
+
+  $('#drawer').replaceChildren(...[
+    h('div', { class: 'drawer-head' },
+      h('a', { href: '#/', class: 'drawer-home', onclick: close }, '🗺️ ', CONFIG.appName),
+      h('button', { class: 'icon-btn', 'aria-label': t('close'), onclick: close }, '✕')),
+    top,
+    h('div', { class: 'drawer-sep' }),
+    h('div', { class: 'drawer-label' }, t('selectRegion')),
+    provGrid,
+    muniSelect,
+    detail ? h('div', { class: 'drawer-sep' }) : null,
+    detail
+  ].filter(Boolean));
   $('#lang-btn').textContent = getLang().toUpperCase();
-  $('#lang-btn').onclick = () => {
-    const langs = CONFIG.languages.map((l) => l.code);
-    setLang(langs[(langs.indexOf(getLang()) + 1) % langs.length]);
-    buildDrawer(); map.relabel(); route();
-  };
   $('#tagline').textContent = t('tagline');
 }
 
 /* ---------- router ---------- */
 function route() {
-  clearInterval(bannerTimer);
-  toggleDrawer(false);
+  if (!keepDrawer) toggleDrawer(false);
+  keepDrawer = false;
   const [path, query] = location.hash.replace(/^#\/?/, '').split('?');
   const parts = path.split('/').filter(Boolean);
   const params = new URLSearchParams(query || '');
   const [page] = parts;
-  document.querySelectorAll('.drawer-link').forEach((a) => a.classList.toggle('current', a.getAttribute('href') === '#/' + (page === 'map' ? '' : page || '')));
-  window.scrollTo(0, 0);
+
+  if (page === 'map' && regions.get(parts[1])) {
+    const prov = parts[1];
+    const muni = parts[2] && regions.get(parts[2])?.province === prov ? parts[2] : null;
+    current = { prov, muni, section: section(params.get('s')).key };
+  } else {
+    current = { prov: null, muni: null, section: 'overview' };
+  }
+  buildDrawer();
+  if (!document.body.classList.contains('drawer-open')) window.scrollTo(0, 0);
 
   if (!page) return renderHome();
-  if (page === 'map') return renderRegion(parts[1], parts[2]);
-  if (SECTIONS[page]) return renderSection(page, params.get('r') || '');
-  if (['youtube', 'facebook', 'x'].includes(page)) return renderSocial(page);
+  if (page === 'map' && current.prov) return renderRegion();
   if (page === 'login') return renderLogin();
   if (page === 'signup') return renderSignup();
   if (page === 'admin') return renderAdmin(parts[1]);
   location.hash = '#/';
 }
 
-/* ---------- home: map + bottom banners ---------- */
+/* ---------- home: map + region selection only ---------- */
 function renderHome() {
   document.title = CONFIG.appName;
   map.showKorea();
-  const banners = store.list('homeBanners');
   view.replaceChildren(
     h('section', { class: 'map-layout home' },
       h('div', { class: 'map-card' }, mapHost, h('p', { class: 'map-hint' }, t('mapHint'))),
       h('aside', { class: 'side' },
-        h('h2', { class: 'side-title' }, t('allKorea')),
+        h('h2', { class: 'side-title' }, t('selectRegion')),
         h('div', { class: 'prov-list' }, regions.provinces().map((p) =>
-          h('a', { href: `#/map/${p.code}`, class: 'prov-chip', style: { '--c': regionColor(p.code) } }, regionName(p)))),
-        quickLinks())),
-    banners.length ? bannerStrip(banners) : null
-  );
+          h('a', { href: regionHash(p.code), class: 'prov-chip', style: { '--c': regionColor(p.code) } }, regionName(p)))))));
 }
 
-function quickLinks() {
-  return h('div', { class: 'quick' },
-    [['mayors', '🏛️'], ['festivals', '🎉'], ['investment', '📈']].map(([k, i]) =>
-      h('a', { href: `#/${k}`, class: 'quick-link' }, h('span', { 'aria-hidden': 'true' }, i), t(k))));
-}
-
-function bannerStrip(banners) {
-  const track = h('div', { class: 'strip-track' }, banners.map((b) =>
-    h('a', {
-      class: 'strip-banner', href: safeUrl(b.link) || (b.link?.startsWith('#') ? b.link : null),
-      target: b.link?.startsWith('http') ? '_blank' : null, rel: 'noopener',
-      style: { '--c': b.color || '#1d4ed8', backgroundImage: safeUrl(b.image) ? `linear-gradient(90deg, rgb(0 0 0 / .55), rgb(0 0 0 / .1)), url("${b.image}")` : null }
-    }, h('strong', {}, L(b.title)), b.text ? h('span', {}, L(b.text)) : null)));
-  const dots = h('div', { class: 'strip-dots' }, banners.map((_, i) => h('button', { 'aria-label': `Banner ${i + 1}`, onclick: () => go(i) })));
-  let idx = 0;
-  const go = (i) => {
-    idx = (i + banners.length) % banners.length;
-    track.scrollTo({ left: track.clientWidth * idx, behavior: 'smooth' });
-    [...dots.children].forEach((d, j) => d.classList.toggle('on', j === idx));
-  };
-  track.addEventListener('scroll', () => {
-    const i = Math.round(track.scrollLeft / track.clientWidth);
-    if (i !== idx) { idx = i; [...dots.children].forEach((d, j) => d.classList.toggle('on', j === idx)); }
-  }, { passive: true });
-  setTimeout(() => go(0));
-  if (banners.length > 1) bannerTimer = setInterval(() => go(idx + 1), 5000);
-  return h('section', { class: 'strip', 'aria-label': 'Banners' }, track, banners.length > 1 ? dots : null);
-}
-
-/* ---------- province / municipality ---------- */
-function renderRegion(provCode, muniCode) {
-  const prov = regions.get(provCode);
-  if (!prov) return (location.hash = '#/');
-  const muni = muniCode ? regions.get(muniCode) : null;
-  map.showProvince(provCode, muni?.code || null);
-  const code = muni ? muni.code : provCode;
-  document.title = `${regionName(muni || prov)} · ${CONFIG.appName}`;
-
-  const back = h('a', { class: 'back', href: muni ? `#/map/${provCode}` : '#/' }, '← ', muni ? regionName(prov) : t('allKorea'));
-  const crumbs = h('nav', { class: 'crumbs' }, h('a', { href: '#/' }, t('allKorea')), ' › ',
-    muni ? [h('a', { href: `#/map/${provCode}` }, regionName(prov)), ' › ', h('span', {}, regionName(muni))] : h('span', {}, regionName(prov)));
-
-  const munis = regions.municipalities(provCode).sort((a, b) => regionName(a).localeCompare(regionName(b), getLang()));
-  const search = h('input', { type: 'search', class: 'input', placeholder: t('search'), 'aria-label': t('search') });
-  const chips = h('div', { class: 'muni-list' }, munis.map((m) =>
-    h('a', { href: `#/map/${provCode}/${m.code}`, class: 'muni-chip' + (m.code === muniCode ? ' on' : ''), 'data-name': `${m.ko} ${m.en}`.toLowerCase() }, regionName(m))));
-  search.oninput = () => {
-    const q = search.value.trim().toLowerCase();
-    [...chips.children].forEach((c) => (c.hidden = q && !c.dataset.name.includes(q)));
-  };
-
-  view.replaceChildren(h('section', { class: 'map-layout' },
-    h('div', { class: 'map-card' }, h('div', { class: 'map-toolbar' }, back), mapHost),
-    h('aside', { class: 'side' },
-      crumbs,
-      regionBanner(code),
-      relatedItems(code),
-      munis.length > 1 || !muni ? h('div', { class: 'panel' }, h('h3', {}, t('localGovs'), h('small', {}, ` (${munis.length})`)), munis.length > 8 ? search : null, chips) : null)));
-}
-
-function regionBanner(code) {
-  const r = regions.get(code);
-  const info = store.get('regions', code) || {};
-  const prov = code.length === 5 ? regions.get(r.province) : null;
-  const url = safeUrl(info.url);
-  const img = safeUrl(info.image);
-  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${r.ko} ${prov && r.province !== '29' ? prov.ko : ''} 공식 홈페이지`)}`;
-  return h('article', { class: 'region-banner', style: { '--c': regionColor(code) } },
-    h('div', { class: 'region-hero' + (img ? '' : ' no-img') }, img ? h('img', { src: img, alt: '' }) : null,
-      h('div', { class: 'region-hero-text' },
-        h('h2', {}, regionName(r)),
-        h('span', {}, getLang() === 'ko' ? r.en : r.ko, prov ? ` · ${regionName(prov)}` : ''))),
-    h('div', { class: 'region-body' },
-      L(info.intro) ? h('p', {}, L(info.intro)) : null,
-      h('div', { class: 'region-actions' },
-        url
-          ? h('a', { class: 'btn primary', href: url, target: '_blank', rel: 'noopener' }, '🌐 ', t('officialSite'))
-          : h('a', { class: 'btn', href: searchUrl, target: '_blank', rel: 'noopener' }, '🔎 ', t('findSite')),
-        safeUrl(info.link) ? h('a', { class: 'btn', href: info.link, target: '_blank', rel: 'noopener' }, t('more'), ' →') : null),
-      url ? h('a', { class: 'region-url', href: url, target: '_blank', rel: 'noopener' }, url.replace(/^https?:\/\//, '').replace(/\/$/, '')) : null));
+/* ---------- selected region: header + detail menu + content ---------- */
+function sortedMunis(prov) {
+  return regions.municipalities(prov).sort((a, b) => regionName(a).localeCompare(regionName(b), getLang()));
 }
 
 function itemsFor(col, code) {
   return store.list(col).filter((i) => i.region && (code.length === 2 ? i.region.startsWith(code) : i.region === code));
 }
 
-function relatedItems(code) {
-  const groups = Object.entries(SECTIONS).map(([k, s]) => [k, s, itemsFor(s.col, code)]).filter(([, , items]) => items.length);
-  if (!groups.length) return null;
-  return h('div', { class: 'panel' }, h('h3', {}, t('related')),
-    groups.map(([k, s, items]) => h('div', { class: 'related-group' },
-      h('a', { class: 'related-head', href: `#/${k}?r=${code}` }, t(k), h('small', {}, ` ${items.length} →`)),
-      h('div', { class: 'card-row' }, items.map((i) => card(k, i))))));
+function sectionItems(s, code) {
+  if (s.col) return itemsFor(s.col, code);
+  if (s.platform) return itemsFor('social', code).filter((p) => p.platform === s.platform);
+  return [];
 }
 
-/* ---------- Mayor's Greetings / Festivals / Investment ---------- */
-function card(section, item) {
-  const s = SECTIONS[section];
+function countBadge(s, code) {
+  const n = sectionItems(s, code).length;
+  return n ? h('span', { class: 'count' }, n) : null;
+}
+
+function renderRegion() {
+  const { prov: provCode, muni: muniCode, section: sec } = current;
+  const prov = regions.get(provCode);
+  const muni = muniCode ? regions.get(muniCode) : null;
+  const code = muniCode || provCode;
+  map.showProvince(provCode, muniCode);
+  document.title = `${regionName(muni || prov)} · ${CONFIG.appName}`;
+
+  const back = h('a', { class: 'back', href: muni ? regionHash(provCode, null, sec) : '#/' }, '← ', muni ? regionName(prov) : t('allKorea'));
+  const crumbs = h('nav', { class: 'crumbs' }, h('a', { href: '#/' }, t('allKorea')), ' › ',
+    muni ? [h('a', { href: regionHash(provCode, null, sec) }, regionName(prov)), ' › ', h('span', {}, regionName(muni))] : h('span', {}, regionName(prov)));
+
+  const menu = h('nav', { class: 'section-menu', 'aria-label': t('regionMenu') }, SECTIONS.map((s) =>
+    h('a', { href: regionHash(provCode, muniCode, s.key), class: s.key === sec ? 'on' : '', 'aria-current': s.key === sec ? 'page' : null },
+      h('span', { class: 'ico', 'aria-hidden': 'true' }, s.icon), h('span', {}, t(s.key)), countBadge(s, code))));
+
+  const munis = sortedMunis(provCode);
+  const muniPanel = munis.length > 1 ? muniChooser(provCode, munis, muniCode, sec) : null;
+
+  view.replaceChildren(h('section', { class: 'map-layout' },
+    h('div', { class: 'map-card' }, h('div', { class: 'map-toolbar' }, back), mapHost),
+    h('aside', { class: 'side' },
+      crumbs,
+      regionHeader(code),
+      menu,
+      h('div', { class: 'section-body' }, sectionContent(section(sec), code)),
+      muniPanel)));
+}
+
+function muniChooser(provCode, munis, muniCode, sec) {
+  const search = h('input', { type: 'search', class: 'input', placeholder: t('search'), 'aria-label': t('search') });
+  const chips = h('div', { class: 'muni-list' }, munis.map((m) =>
+    h('a', { href: regionHash(provCode, m.code, sec), class: 'muni-chip' + (m.code === muniCode ? ' on' : ''), 'data-name': `${m.ko} ${m.en}`.toLowerCase() }, regionName(m))));
+  search.oninput = () => {
+    const q = search.value.trim().toLowerCase();
+    [...chips.children].forEach((c) => (c.hidden = q && !c.dataset.name.includes(q)));
+  };
+  return h('div', { class: 'panel' }, h('h3', {}, t('localGovs'), h('small', {}, ` (${munis.length})`)), munis.length > 8 ? search : null, chips);
+}
+
+function regionHeader(code) {
+  const r = regions.get(code);
+  const prov = code.length === 5 ? regions.get(r.province) : null;
+  const img = safeUrl((store.get('regions', code) || {}).image);
+  return h('div', { class: 'region-hero' + (img ? '' : ' no-img'), style: { '--c': regionColor(code) } },
+    img ? h('img', { src: img, alt: '' }) : null,
+    h('div', { class: 'region-hero-text' },
+      h('h2', {}, regionName(r)),
+      h('span', {}, getLang() === 'ko' ? r.en : r.ko, prov && r.province !== '29' ? ` · ${regionName(prov)}` : '')));
+}
+
+function sectionContent(s, code) {
+  if (s.key === 'overview') return overview(code);
+  if (s.platform) return socialSection(s, code);
+  const items = sectionItems(s, code);
+  return items.length ? h('div', { class: 'card-grid compact' }, items.map((i) => card(s, i))) : empty();
+}
+
+function empty() {
+  return h('p', { class: 'empty' }, t('noItems'));
+}
+
+function overview(code) {
+  const r = regions.get(code);
+  const info = store.get('regions', code) || {};
+  const prov = code.length === 5 ? regions.get(r.province) : null;
+  const url = safeUrl(info.url);
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${r.ko} ${prov && r.province !== '29' ? prov.ko : ''} 공식 홈페이지`)}`;
+  return h('div', { class: 'panel region-body' },
+    L(info.intro) ? h('p', {}, L(info.intro)) : null,
+    h('div', { class: 'region-actions' },
+      url
+        ? h('a', { class: 'btn primary', href: url, target: '_blank', rel: 'noopener' }, '🌐 ', t('officialSite'))
+        : h('a', { class: 'btn', href: searchUrl, target: '_blank', rel: 'noopener' }, '🔎 ', t('findSite')),
+      safeUrl(info.link) ? h('a', { class: 'btn', href: info.link, target: '_blank', rel: 'noopener' }, t('more'), ' →') : null),
+    url ? h('a', { class: 'region-url', href: url, target: '_blank', rel: 'noopener' }, url.replace(/^https?:\/\//, '').replace(/\/$/, '')) : null);
+}
+
+function card(s, item) {
   return bannerCard({
     title: s.title(item), subtitle: s.sub(item), body: s.body(item), image: item.image, region: item.region,
     regionLabel: regions.label(item.region), badge: item.sample ? t('sample') : null,
-    onclick: () => openItem(section, item)
+    onclick: () => openItem(s, item)
   });
 }
 
-function openItem(section, item) {
-  const s = SECTIONS[section];
+function openItem(s, item) {
   const info = store.get('regions', item.region) || {};
   const link = safeUrl(item.link) || safeUrl(info.url);
   const img = safeUrl(item.image);
-  const prov = item.region.slice(0, 2);
   modal(h('div', { class: 'item-detail' },
     h('div', { class: 'item-hero' + (img ? '' : ' no-img'), style: { '--c': regionColor(item.region) } }, img ? h('img', { src: img, alt: '' }) : h('span', {}, initial(s.title(item)))),
     h('span', { class: 'chip' }, regions.label(item.region)),
@@ -247,59 +284,19 @@ function openItem(section, item) {
     h('h2', {}, s.title(item)),
     s.sub(item) ? h('p', { class: 'muted' }, s.sub(item)) : null,
     h('p', { class: 'pre' }, s.body(item)),
-    h('div', { class: 'region-actions' },
-      link ? h('a', { class: 'btn primary', href: link, target: '_blank', rel: 'noopener' }, t('visit'), ' ↗') : null,
-      h('a', { class: 'btn', href: item.region.length === 5 ? `#/map/${prov}/${item.region}` : `#/map/${prov}`, onclick: () => $('.modal-close')?.click() }, '🗺️ ', regions.label(item.region)))));
+    link ? h('div', { class: 'region-actions' }, h('a', { class: 'btn primary', href: link, target: '_blank', rel: 'noopener' }, t('visit'), ' ↗')) : null));
 }
 
-function regionFilter(selected, onchange) {
-  return h('select', { class: 'input', 'aria-label': t('filter'), onchange: (e) => onchange(e.target.value) },
-    h('option', { value: '' }, t('allRegions')),
-    regions.provinces().map((p) => [
-      h('option', { value: p.code, selected: selected === p.code }, regionName(p)),
-      ...(selected.length === 5 && regions.get(selected)?.province === p.code
-        ? [h('option', { value: selected, selected: true }, '　· ' + regionName(regions.get(selected)))] : [])
-    ]));
-}
-
-function renderSection(section, filter) {
-  const s = SECTIONS[section];
-  document.title = `${t(section)} · ${CONFIG.appName}`;
-  const items = filter ? itemsFor(s.col, filter) : store.list(s.col);
-  view.replaceChildren(h('section', { class: 'page' },
-    h('div', { class: 'page-head' },
-      h('h1', {}, t(section)),
-      regionFilter(filter, (v) => (location.hash = `#/${section}${v ? '?r=' + v : ''}`))),
-    items.length ? h('div', { class: 'card-grid' }, items.map((i) => card(section, i))) : h('p', { class: 'empty' }, t('noItems'))));
-}
-
-/* ---------- YouTube / Facebook / X ---------- */
-function renderSocial(platform) {
+/* ---------- YouTube / Facebook / X for the selected region ---------- */
+function socialSection(s, code) {
   const st = store.settings();
-  const profile = safeUrl({ youtube: st.youtubeUrl, facebook: st.facebookUrl, x: st.xUrl }[platform]);
-  const name = t(platform);
-  document.title = `${name} · ${CONFIG.appName}`;
-  const posts = store.list('social').filter((p) => p.platform === platform);
-
-  let embed = null;
-  if (platform === 'youtube' && /^UC[\w-]{22}$/.test(st.youtubeChannelId || '')) {
-    embed = h('div', { class: 'panel' }, h('h3', {}, t('latest')),
-      h('div', { class: 'video' }, h('iframe', { src: `https://www.youtube-nocookie.com/embed/videoseries?list=UU${st.youtubeChannelId.slice(2)}`, title: 'YouTube', allow: 'encrypted-media; picture-in-picture', allowfullscreen: true, loading: 'lazy' })));
-  }
-  if (platform === 'facebook' && profile) {
-    embed = h('div', { class: 'panel fb' }, h('iframe', {
-      src: `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(profile)}&tabs=timeline&width=500&height=600&small_header=true&hide_cover=false`,
-      width: 500, height: 600, title: 'Facebook', loading: 'lazy', style: { border: 0, maxWidth: '100%' }
-    }));
-  }
-
-  view.replaceChildren(h('section', { class: 'page' },
-    h('div', { class: 'social-head ' + platform },
-      h('div', {}, h('h1', {}, name, ' · koreacity'), h('p', {}, t('tagline'))),
-      profile ? h('a', { class: 'btn light', href: profile, target: '_blank', rel: 'noopener' }, t('openProfile', { p: name }), ' ↗') : null),
-    embed,
-    h('h2', { class: 'section-sub' }, t('posts')),
-    posts.length ? h('div', { class: 'card-grid' }, posts.map((p) => socialCard(p))) : h('p', { class: 'empty' }, t('noItems'))));
+  const profile = safeUrl({ youtube: st.youtubeUrl, facebook: st.facebookUrl, x: st.xUrl }[s.platform]);
+  const posts = sectionItems(s, code);
+  return h('div', { class: 'social-section' },
+    h('div', { class: 'social-head ' + s.platform },
+      h('strong', {}, t(s.key), ' · koreacity'),
+      profile ? h('a', { class: 'btn small light', href: profile, target: '_blank', rel: 'noopener' }, t('openProfile', { p: t(s.key) }), ' ↗') : null),
+    posts.length ? h('div', { class: 'card-grid compact' }, posts.map(socialCard)) : empty());
 }
 
 function socialCard(p) {
