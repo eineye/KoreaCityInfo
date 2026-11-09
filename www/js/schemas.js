@@ -8,15 +8,6 @@ const common = [
 ];
 
 export const SCHEMAS = {
-  homeBanners: {
-    label: 'homeBanners', titleKey: 'title',
-    fields: [
-      { key: 'title', type: 'text', i18n: true, label: 'Title', required: true },
-      { key: 'text', type: 'textarea', i18n: true, label: 'Text' },
-      { key: 'color', type: 'color', label: 'Background colour', default: '#1d4ed8' },
-      ...common
-    ]
-  },
   mayors: {
     label: 'mayors', titleKey: 'name',
     fields: [
@@ -51,7 +42,7 @@ export const SCHEMAS = {
     label: 'social', titleKey: 'title',
     fields: [
       { key: 'platform', type: 'select', label: 'Platform', options: ['youtube', 'facebook', 'x'], required: true },
-      { key: 'region', type: 'region', label: 'Region' },
+      { key: 'region', type: 'region', label: 'Region', required: true },
       { key: 'title', type: 'text', i18n: true, label: 'Title', required: true },
       { key: 'url', type: 'url', label: 'Post / video URL', required: true },
       { key: 'image', type: 'image', label: 'Thumbnail (optional, auto for YouTube)' },

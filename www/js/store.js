@@ -3,7 +3,7 @@
 //   SupabaseAdapter — free-tier Supabase project, table `content` (see supabase/schema.sql)
 import { CONFIG } from './config.js';
 
-export const COLLECTIONS = ['regions', 'homeBanners', 'mayors', 'festivals', 'investments', 'social', 'settings', 'users'];
+export const COLLECTIONS = ['regions', 'mayors', 'festivals', 'investments', 'social', 'settings', 'users'];
 const LS_KEY = 'kci.data.v1';
 
 let cache = {};

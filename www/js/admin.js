@@ -6,15 +6,15 @@ import { t, L, regionName } from './i18n.js';
 import { h, modal, toast, safeUrl } from './ui.js';
 
 const TABS = [
-  ['homeBanners', 'homeBanners'], ['mayors', 'mayors'], ['festivals', 'festivals'], ['investments', 'investment'],
+  ['mayors', 'mayors'], ['festivals', 'festivals'], ['investments', 'investment'],
   ['social', 'social'], ['regions', 'regions'], ['settings', 'settings'], ['users', 'users'], ['data', 'data']
 ];
 
 let ctx;
 
-export function renderAdmin(view, tab = 'homeBanners', context) {
+export function renderAdmin(view, tab = 'mayors', context) {
   ctx = context;
-  if (!TABS.some(([k]) => k === tab)) tab = 'homeBanners';
+  if (!TABS.some(([k]) => k === tab)) tab = 'mayors';
   document.title = `${t('adminTitle')} · ${CONFIG.appName}`;
   const body = h('div', { class: 'admin-body' });
   view.replaceChildren(h('section', { class: 'page admin' },

@@ -221,68 +221,6 @@
       "url": "https://www.haeundae.go.kr"
     }
   ],
-  "homeBanners": [
-    {
-      "id": "s21",
-      "order": 21,
-      "active": true,
-      "title": {
-        "en": "Explore 17 provinces and 226 local governments",
-        "ko": "17개 시·도, 226개 시·군·구를 만나보세요"
-      },
-      "text": {
-        "en": "Tap the map to find official websites and local information.",
-        "ko": "지도를 눌러 공식 홈페이지와 지역 정보를 확인하세요."
-      },
-      "color": "#0b3d91",
-      "link": "#/"
-    },
-    {
-      "id": "s22",
-      "order": 22,
-      "active": true,
-      "title": {
-        "en": "Festivals across Korea",
-        "ko": "전국 축제 안내"
-      },
-      "text": {
-        "en": "From cherry blossoms in spring to ice fishing in winter.",
-        "ko": "봄 벚꽃부터 겨울 얼음낚시까지."
-      },
-      "color": "#c2410c",
-      "link": "#/festivals"
-    },
-    {
-      "id": "s23",
-      "order": 23,
-      "active": true,
-      "title": {
-        "en": "Invest in Korean cities",
-        "ko": "지역 투자유치"
-      },
-      "text": {
-        "en": "Free economic zones, industrial clusters and incentives.",
-        "ko": "경제자유구역, 산업 클러스터, 투자 인센티브."
-      },
-      "color": "#047857",
-      "link": "#/investment"
-    },
-    {
-      "id": "s24",
-      "order": 24,
-      "active": true,
-      "title": {
-        "en": "Watch koreacity on YouTube",
-        "ko": "유튜브 koreacity 채널"
-      },
-      "text": {
-        "en": "Video stories about the cities we introduce.",
-        "ko": "소개한 도시들의 영상 이야기."
-      },
-      "color": "#b91c1c",
-      "link": "#/youtube"
-    }
-  ],
   "mayors": [
     {
       "id": "s18",
