@@ -7,7 +7,6 @@
   "scripts": {
     "start": "npx --yes serve www -l 8080",
     "build:map": "node scripts/build-map.mjs data-src/skorea_municipalities_geo_simple.json",
-    "android:init": "npx cap add android",
     "android:sync": "npx cap sync android",
     "android:open": "npx cap open android"
   },
