@@ -63,7 +63,7 @@ body.drawer-open .backdrop { opacity: 1; pointer-events: auto; }
 .map-layout { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 900px) { .map-layout { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } .side { position: sticky; top: calc(var(--top) + 16px); max-height: calc(100vh - var(--top) - 32px); overflow-y: auto; } }
 .map-card { background: var(--sea); border-radius: var(--radius); padding: 8px; position: relative; box-shadow: var(--shadow); }
-.map-host { aspect-ratio: 4 / 5; max-height: calc(100vh - var(--top) - 120px); margin: 0 auto; }
+.map-host { position: relative; aspect-ratio: 4 / 5; max-height: calc(100vh - var(--top) - 120px); margin: 0 auto; }
 @media (max-width: 899px) { .map-host { max-height: 68vh; } }
 .map-hint { margin: 4px 8px 6px; color: var(--muted); font-size: 13px; text-align: center; }
 .map-toolbar { position: absolute; top: 10px; left: 10px; z-index: 2; }
@@ -286,3 +286,16 @@ fieldset.field legend { padding: 0; margin-bottom: 6px; }
 .drawer-home { display: block; flex: 1; }
 .drawer-home img { display: block; height: 76px; width: auto; max-width: 100%; border-radius: 8px; }
 .auth-logo { display: block; width: min(240px, 80%); margin: 0 auto 4px; border-radius: 10px; }
+
+/* ---------- map zoom controls ---------- */
+.korea-map { cursor: default; user-select: none; -webkit-user-select: none; }
+.korea-map.zoomed { cursor: grab; }
+.korea-map.dragging, .korea-map.dragging path { cursor: grabbing; }
+.map-controls { position: absolute; right: 8px; bottom: 8px; display: grid; gap: 6px; z-index: 3; }
+.map-btn {
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text);
+  font: 600 20px/1 system-ui, sans-serif; cursor: pointer; box-shadow: var(--shadow); display: grid; place-items: center; padding: 0;
+}
+.map-btn:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+.map-btn:disabled { opacity: .4; cursor: default; }
+.map-hint { position: relative; z-index: 2; background: var(--sea); margin: 0; padding: 4px 8px 6px; border-radius: 0 0 10px 10px; }
