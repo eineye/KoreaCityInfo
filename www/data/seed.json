@@ -1,0 +1,671 @@
+{
+  "regions": [
+    {
+      "id": "11",
+      "url": "https://english.seoul.go.kr",
+      "intro": {
+        "en": "The capital of Korea — 600 years of history alongside K-culture, palaces, the Han River and world-class shopping.",
+        "ko": "대한민국의 수도. 600년 역사와 K-컬처, 고궁, 한강이 어우러진 도시입니다."
+      }
+    },
+    {
+      "id": "21",
+      "url": "https://www.busan.go.kr",
+      "intro": {
+        "en": "Korea's largest port city, famous for Haeundae Beach, seafood markets and the Busan International Film Festival.",
+        "ko": "해운대, 수산시장, 부산국제영화제로 유명한 대한민국 최대의 항구도시입니다."
+      }
+    },
+    {
+      "id": "22",
+      "url": "https://www.daegu.go.kr",
+      "intro": {
+        "en": "A hub of textiles, medical tourism and fashion in the heart of the Yeongnam region.",
+        "ko": "섬유·패션과 의료관광의 중심, 영남의 중심 도시입니다."
+      }
+    },
+    {
+      "id": "23",
+      "url": "https://www.incheon.go.kr",
+      "intro": {
+        "en": "Gateway to Korea through Incheon International Airport, home of the Songdo smart city and the Free Economic Zone.",
+        "ko": "인천국제공항이 있는 대한민국의 관문이자 송도국제도시·경제자유구역의 도시입니다."
+      }
+    },
+    {
+      "id": "24",
+      "url": "https://www.gwangju.go.kr",
+      "intro": {
+        "en": "A city of democracy, human rights and art, host of the Gwangju Biennale.",
+        "ko": "민주·인권·예술의 도시, 광주비엔날레의 개최지입니다."
+      }
+    },
+    {
+      "id": "25",
+      "url": "https://www.daejeon.go.kr",
+      "intro": {
+        "en": "A science city at the centre of Korea, home of Daedeok Innopolis research institutes.",
+        "ko": "대덕연구개발특구가 있는 대한민국 과학기술의 중심 도시입니다."
+      }
+    },
+    {
+      "id": "26",
+      "url": "https://www.ulsan.go.kr",
+      "intro": {
+        "en": "Korea's industrial capital of automobiles, shipbuilding and petrochemicals, with the Taehwagang National Garden.",
+        "ko": "자동차·조선·석유화학의 산업수도이자 태화강 국가정원의 도시입니다."
+      }
+    },
+    {
+      "id": "29",
+      "url": "https://www.sejong.go.kr",
+      "intro": {
+        "en": "The administrative capital where most central government ministries are located.",
+        "ko": "중앙행정기관이 모여 있는 행정중심복합도시입니다."
+      }
+    },
+    {
+      "id": "31",
+      "url": "https://www.gg.go.kr",
+      "intro": {
+        "en": "The most populous province, surrounding Seoul — home to the Suwon Hwaseong Fortress and a world-leading semiconductor industry.",
+        "ko": "서울을 둘러싼 최대 인구의 광역자치단체. 수원화성과 세계적 반도체 산업이 있습니다."
+      }
+    },
+    {
+      "id": "32",
+      "url": "https://state.gwd.go.kr",
+      "intro": {
+        "en": "Mountains and the East Sea coast — ski resorts, beaches and the 2018 Winter Olympic venues.",
+        "ko": "산과 동해안이 어우러진 곳. 스키장, 해변, 2018 동계올림픽 개최지입니다."
+      }
+    },
+    {
+      "id": "33",
+      "url": "https://www.chungbuk.go.kr",
+      "intro": {
+        "en": "The only landlocked province, known for lakes, Sokrisan mountain and the bio-health industry.",
+        "ko": "바다가 없는 유일한 도. 호수와 속리산, 바이오산업으로 유명합니다."
+      }
+    },
+    {
+      "id": "34",
+      "url": "https://www.chungnam.go.kr",
+      "intro": {
+        "en": "Land of the ancient Baekje Kingdom with West Sea beaches and the Boryeong Mud Festival.",
+        "ko": "백제의 고도와 서해안 해변, 보령머드축제가 있는 곳입니다."
+      }
+    },
+    {
+      "id": "35",
+      "url": "https://www.jeonbuk.go.kr",
+      "intro": {
+        "en": "Home of Korean food culture — Jeonju Hanok Village, bibimbap and the Saemangeum development.",
+        "ko": "한식의 본고장. 전주한옥마을, 비빔밥, 새만금이 있는 곳입니다."
+      }
+    },
+    {
+      "id": "36",
+      "url": "https://www.jeonnam.go.kr",
+      "intro": {
+        "en": "Over 2,000 islands, tidal flats, green tea fields and rich southern cuisine.",
+        "ko": "2천여 개의 섬과 갯벌, 녹차밭, 남도 음식의 고장입니다."
+      }
+    },
+    {
+      "id": "37",
+      "url": "https://www.gb.go.kr",
+      "intro": {
+        "en": "Heart of Korean Confucian and Silla heritage — Gyeongju, Andong Hahoe Village and Ulleungdo/Dokdo.",
+        "ko": "신라와 유교 문화의 중심. 경주, 안동 하회마을, 울릉도·독도가 있습니다."
+      }
+    },
+    {
+      "id": "38",
+      "url": "https://www.gyeongnam.go.kr",
+      "intro": {
+        "en": "Southern coast of beautiful islands and a machinery, aerospace and shipbuilding powerhouse.",
+        "ko": "아름다운 남해안과 기계·항공·조선 산업의 중심지입니다."
+      }
+    },
+    {
+      "id": "39",
+      "url": "https://www.jeju.go.kr",
+      "intro": {
+        "en": "A UNESCO World Natural Heritage volcanic island with Hallasan, beaches and visa-free tourism.",
+        "ko": "한라산과 해변이 있는 유네스코 세계자연유산의 화산섬입니다."
+      }
+    },
+    {
+      "id": "31010",
+      "url": "https://www.suwon.go.kr",
+      "intro": {
+        "en": "Home of Hwaseong Fortress, a UNESCO World Heritage site built in the 18th century.",
+        "ko": "18세기에 축성된 유네스코 세계문화유산 수원화성의 도시입니다."
+      }
+    },
+    {
+      "id": "35010",
+      "url": "https://www.jeonju.go.kr",
+      "intro": {
+        "en": "Famous for the Jeonju Hanok Village of 700 traditional houses and for bibimbap.",
+        "ko": "700여 채의 한옥마을과 비빔밥으로 유명한 도시입니다."
+      }
+    },
+    {
+      "id": "37020",
+      "url": "https://www.gyeongju.go.kr",
+      "intro": {
+        "en": "The 1,000-year capital of the Silla Kingdom — a \"museum without walls\".",
+        "ko": "천년 신라의 수도, 지붕 없는 박물관 경주입니다."
+      }
+    },
+    {
+      "id": "37040",
+      "url": "https://www.andong.go.kr"
+    },
+    {
+      "id": "38030",
+      "url": "https://www.jinju.go.kr"
+    },
+    {
+      "id": "38110",
+      "url": "https://www.changwon.go.kr"
+    },
+    {
+      "id": "34030",
+      "url": "https://www.brcn.go.kr"
+    },
+    {
+      "id": "32370",
+      "url": "https://www.ihc.go.kr"
+    },
+    {
+      "id": "35060",
+      "url": "https://www.gimje.go.kr"
+    },
+    {
+      "id": "36430",
+      "url": "https://www.hampyeong.go.kr"
+    },
+    {
+      "id": "39010",
+      "url": "https://www.jejusi.go.kr",
+      "intro": {
+        "en": "The capital of Jeju Island, gateway to Hallasan and the northern coast.",
+        "ko": "한라산과 북부 해안으로 향하는 제주의 중심 도시입니다."
+      }
+    },
+    {
+      "id": "39020",
+      "url": "https://www.seogwipo.go.kr"
+    },
+    {
+      "id": "32010",
+      "url": "https://www.chuncheon.go.kr"
+    },
+    {
+      "id": "32030",
+      "url": "https://www.gn.go.kr"
+    },
+    {
+      "id": "11010",
+      "url": "https://www.jongno.go.kr"
+    },
+    {
+      "id": "11230",
+      "url": "https://www.gangnam.go.kr"
+    },
+    {
+      "id": "21090",
+      "url": "https://www.haeundae.go.kr"
+    }
+  ],
+  "homeBanners": [
+    {
+      "id": "s21",
+      "order": 21,
+      "active": true,
+      "title": {
+        "en": "Explore 17 provinces and 226 local governments",
+        "ko": "17개 시·도, 226개 시·군·구를 만나보세요"
+      },
+      "text": {
+        "en": "Tap the map to find official websites and local information.",
+        "ko": "지도를 눌러 공식 홈페이지와 지역 정보를 확인하세요."
+      },
+      "color": "#0b3d91",
+      "link": "#/"
+    },
+    {
+      "id": "s22",
+      "order": 22,
+      "active": true,
+      "title": {
+        "en": "Festivals across Korea",
+        "ko": "전국 축제 안내"
+      },
+      "text": {
+        "en": "From cherry blossoms in spring to ice fishing in winter.",
+        "ko": "봄 벚꽃부터 겨울 얼음낚시까지."
+      },
+      "color": "#c2410c",
+      "link": "#/festivals"
+    },
+    {
+      "id": "s23",
+      "order": 23,
+      "active": true,
+      "title": {
+        "en": "Invest in Korean cities",
+        "ko": "지역 투자유치"
+      },
+      "text": {
+        "en": "Free economic zones, industrial clusters and incentives.",
+        "ko": "경제자유구역, 산업 클러스터, 투자 인센티브."
+      },
+      "color": "#047857",
+      "link": "#/investment"
+    },
+    {
+      "id": "s24",
+      "order": 24,
+      "active": true,
+      "title": {
+        "en": "Watch koreacity on YouTube",
+        "ko": "유튜브 koreacity 채널"
+      },
+      "text": {
+        "en": "Video stories about the cities we introduce.",
+        "ko": "소개한 도시들의 영상 이야기."
+      },
+      "color": "#b91c1c",
+      "link": "#/youtube"
+    }
+  ],
+  "mayors": [
+    {
+      "id": "s18",
+      "order": 18,
+      "active": true,
+      "region": "31010",
+      "sample": true,
+      "name": {
+        "en": "(Name) — Mayor of Suwon",
+        "ko": "(성명) — 수원특례시장"
+      },
+      "position": {
+        "en": "Mayor of Suwon",
+        "ko": "수원특례시장"
+      },
+      "message": {
+        "en": "Welcome to Suwon Special City! This is a sample greeting. Replace it with the mayor's official message and photo in the admin mode.",
+        "ko": "수원특례시에 오신 것을 환영합니다! 샘플 인사말입니다. 관리자 모드에서 단체장의 공식 인사말과 사진으로 바꿔주세요."
+      }
+    },
+    {
+      "id": "s19",
+      "order": 19,
+      "active": true,
+      "region": "35010",
+      "sample": true,
+      "name": {
+        "en": "(Name) — Mayor of Jeonju",
+        "ko": "(성명) — 전주시장"
+      },
+      "position": {
+        "en": "Mayor of Jeonju",
+        "ko": "전주시장"
+      },
+      "message": {
+        "en": "Welcome to Jeonju City! This is a sample greeting. Replace it with the mayor's official message and photo in the admin mode.",
+        "ko": "전주시에 오신 것을 환영합니다! 샘플 인사말입니다. 관리자 모드에서 단체장의 공식 인사말과 사진으로 바꿔주세요."
+      }
+    },
+    {
+      "id": "s20",
+      "order": 20,
+      "active": true,
+      "region": "37020",
+      "sample": true,
+      "name": {
+        "en": "(Name) — Mayor of Gyeongju",
+        "ko": "(성명) — 경주시장"
+      },
+      "position": {
+        "en": "Mayor of Gyeongju",
+        "ko": "경주시장"
+      },
+      "message": {
+        "en": "Welcome to Gyeongju City! This is a sample greeting. Replace it with the mayor's official message and photo in the admin mode.",
+        "ko": "경주시에 오신 것을 환영합니다! 샘플 인사말입니다. 관리자 모드에서 단체장의 공식 인사말과 사진으로 바꿔주세요."
+      }
+    }
+  ],
+  "festivals": [
+    {
+      "id": "s1",
+      "order": 1,
+      "active": true,
+      "region": "11",
+      "title": {
+        "en": "Seoul Lantern Festival",
+        "ko": "서울빛초롱축제"
+      },
+      "period": {
+        "en": "November–December",
+        "ko": "11월~12월"
+      },
+      "description": {
+        "en": "Thousands of handmade lanterns light up Cheonggyecheon Stream in downtown Seoul.",
+        "ko": "도심 청계천을 수놓는 수천 개의 등불 축제입니다."
+      }
+    },
+    {
+      "id": "s2",
+      "order": 2,
+      "active": true,
+      "region": "21",
+      "title": {
+        "en": "Busan International Film Festival",
+        "ko": "부산국제영화제"
+      },
+      "period": {
+        "en": "October",
+        "ko": "10월"
+      },
+      "description": {
+        "en": "Asia's leading film festival, held in Haeundae and the Busan Cinema Center.",
+        "ko": "해운대와 영화의전당에서 열리는 아시아 대표 영화제입니다."
+      }
+    },
+    {
+      "id": "s3",
+      "order": 3,
+      "active": true,
+      "region": "22",
+      "title": {
+        "en": "Daegu Chimac Festival",
+        "ko": "대구치맥페스티벌"
+      },
+      "period": {
+        "en": "Summer",
+        "ko": "여름"
+      },
+      "description": {
+        "en": "Fried chicken and beer (chimaek) festival with concerts and street food.",
+        "ko": "치킨과 맥주, 공연이 함께하는 여름 축제입니다."
+      }
+    },
+    {
+      "id": "s4",
+      "order": 4,
+      "active": true,
+      "region": "23",
+      "title": {
+        "en": "Incheon Pentaport Rock Festival",
+        "ko": "인천펜타포트 락 페스티벌"
+      },
+      "period": {
+        "en": "August",
+        "ko": "8월"
+      },
+      "description": {
+        "en": "One of Korea's biggest outdoor rock festivals.",
+        "ko": "국내 최대 규모의 야외 록 페스티벌 중 하나입니다."
+      }
+    },
+    {
+      "id": "s5",
+      "order": 5,
+      "active": true,
+      "region": "31010",
+      "title": {
+        "en": "Suwon Hwaseong Cultural Festival",
+        "ko": "수원화성문화제"
+      },
+      "period": {
+        "en": "October",
+        "ko": "10월"
+      },
+      "description": {
+        "en": "Royal processions and performances recreating King Jeongjo's visits to Hwaseong Fortress.",
+        "ko": "정조대왕의 화성 행차를 재현하는 문화 축제입니다."
+      }
+    },
+    {
+      "id": "s6",
+      "order": 6,
+      "active": true,
+      "region": "32370",
+      "title": {
+        "en": "Hwacheon Sancheoneo Ice Festival",
+        "ko": "화천 산천어축제"
+      },
+      "period": {
+        "en": "January",
+        "ko": "1월"
+      },
+      "description": {
+        "en": "Ice fishing for mountain trout on a frozen river, plus sledding and ice sculptures.",
+        "ko": "얼음낚시와 눈썰매, 얼음조각을 즐기는 겨울 축제입니다."
+      }
+    },
+    {
+      "id": "s7",
+      "order": 7,
+      "active": true,
+      "region": "34030",
+      "title": {
+        "en": "Boryeong Mud Festival",
+        "ko": "보령머드축제"
+      },
+      "period": {
+        "en": "July",
+        "ko": "7월"
+      },
+      "description": {
+        "en": "Mud slides, mud pools and concerts on Daecheon Beach — a favourite of international visitors.",
+        "ko": "대천해수욕장에서 열리는 외국인에게 인기 높은 머드 축제입니다."
+      }
+    },
+    {
+      "id": "s8",
+      "order": 8,
+      "active": true,
+      "region": "35060",
+      "title": {
+        "en": "Gimje Horizon Festival",
+        "ko": "김제지평선축제"
+      },
+      "period": {
+        "en": "Autumn",
+        "ko": "가을"
+      },
+      "description": {
+        "en": "Rice-farming culture festival on Korea's only visible land horizon.",
+        "ko": "우리나라 유일의 지평선에서 펼쳐지는 농경문화 축제입니다."
+      }
+    },
+    {
+      "id": "s9",
+      "order": 9,
+      "active": true,
+      "region": "36430",
+      "title": {
+        "en": "Hampyeong Butterfly Festival",
+        "ko": "함평나비대축제"
+      },
+      "period": {
+        "en": "Spring",
+        "ko": "봄"
+      },
+      "description": {
+        "en": "Fields of flowers and millions of butterflies in an eco-friendly festival.",
+        "ko": "꽃과 나비가 가득한 친환경 생태 축제입니다."
+      }
+    },
+    {
+      "id": "s10",
+      "order": 10,
+      "active": true,
+      "region": "37040",
+      "title": {
+        "en": "Andong Mask Dance Festival",
+        "ko": "안동국제탈춤페스티벌"
+      },
+      "period": {
+        "en": "Autumn",
+        "ko": "가을"
+      },
+      "description": {
+        "en": "Traditional Korean mask dances and international troupes near Hahoe Village.",
+        "ko": "하회탈춤과 세계의 탈춤 공연이 펼쳐지는 축제입니다."
+      }
+    },
+    {
+      "id": "s11",
+      "order": 11,
+      "active": true,
+      "region": "38030",
+      "title": {
+        "en": "Jinju Namgang Yudeung Festival",
+        "ko": "진주남강유등축제"
+      },
+      "period": {
+        "en": "October",
+        "ko": "10월"
+      },
+      "description": {
+        "en": "Thousands of lanterns float on the Namgang River beneath Jinjuseong Fortress.",
+        "ko": "진주성 아래 남강을 수놓는 유등 축제입니다."
+      }
+    },
+    {
+      "id": "s12",
+      "order": 12,
+      "active": true,
+      "region": "38110",
+      "title": {
+        "en": "Jinhae Gunhangje Festival",
+        "ko": "진해군항제"
+      },
+      "period": {
+        "en": "Late March–April",
+        "ko": "3월 말~4월"
+      },
+      "description": {
+        "en": "Korea's largest cherry blossom festival in the Jinhae district of Changwon.",
+        "ko": "창원 진해에서 열리는 국내 최대의 벚꽃 축제입니다."
+      }
+    },
+    {
+      "id": "s13",
+      "order": 13,
+      "active": true,
+      "region": "39010",
+      "title": {
+        "en": "Jeju Fire Festival",
+        "ko": "제주들불축제"
+      },
+      "period": {
+        "en": "Spring",
+        "ko": "봄"
+      },
+      "description": {
+        "en": "A traditional fire ritual lighting up Saebyeol Oreum hill.",
+        "ko": "새별오름을 불태우는 전통 들불 축제입니다."
+      }
+    }
+  ],
+  "investments": [
+    {
+      "id": "s14",
+      "order": 14,
+      "active": true,
+      "region": "23040",
+      "title": {
+        "en": "Incheon Free Economic Zone (Songdo)",
+        "ko": "인천경제자유구역 (송도)"
+      },
+      "sector": {
+        "en": "Bio · Smart city · Logistics",
+        "ko": "바이오 · 스마트시티 · 물류"
+      },
+      "description": {
+        "en": "Bio-pharma cluster, international business district and direct access to Incheon Airport and port.",
+        "ko": "바이오 클러스터와 국제업무지구, 공항·항만 접근성을 갖춘 경제자유구역입니다."
+      },
+      "sample": true
+    },
+    {
+      "id": "s15",
+      "order": 15,
+      "active": true,
+      "region": "31190",
+      "title": {
+        "en": "Yongin Semiconductor Cluster",
+        "ko": "용인 반도체 클러스터"
+      },
+      "sector": {
+        "en": "Semiconductors",
+        "ko": "반도체"
+      },
+      "description": {
+        "en": "Large-scale semiconductor manufacturing and supply-chain cluster in Gyeonggi-do.",
+        "ko": "경기도의 대규모 반도체 생산 및 소부장 클러스터입니다."
+      },
+      "sample": true
+    },
+    {
+      "id": "s16",
+      "order": 16,
+      "active": true,
+      "region": "35",
+      "title": {
+        "en": "Saemangeum",
+        "ko": "새만금"
+      },
+      "sector": {
+        "en": "Renewable energy · Secondary batteries",
+        "ko": "신재생에너지 · 이차전지"
+      },
+      "description": {
+        "en": "Reclaimed coastal area on the West Sea being developed as an industrial and tourism hub.",
+        "ko": "서해안 간척지에 조성되는 산업·관광 거점입니다."
+      },
+      "sample": true
+    },
+    {
+      "id": "s17",
+      "order": 17,
+      "active": true,
+      "region": "21",
+      "title": {
+        "en": "Busan-Jinhae Free Economic Zone",
+        "ko": "부산진해경제자유구역"
+      },
+      "sector": {
+        "en": "Port logistics · Manufacturing",
+        "ko": "항만물류 · 제조"
+      },
+      "description": {
+        "en": "Free economic zone around Busan New Port connecting shipping, logistics and advanced manufacturing.",
+        "ko": "부산신항을 중심으로 한 항만·물류·첨단제조 경제자유구역입니다."
+      },
+      "sample": true
+    }
+  ],
+  "social": [],
+  "settings": [
+    {
+      "id": "site",
+      "youtubeUrl": "https://www.youtube.com/@koreacity",
+      "youtubeChannelId": "",
+      "facebookUrl": "https://www.facebook.com/koreacity",
+      "xUrl": "https://x.com/koreacity",
+      "contactEmail": ""
+    }
+  ],
+  "users": []
+}
