@@ -1,0 +1,60 @@
+name: Build Android test APK
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths: ['www/**', 'android/**', 'package.json', 'package-lock.json', 'capacitor.config.json', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Copy web app into the Android project
+        run: |
+          npm ci
+          npx cap sync android
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../KoreaCityInfo-test.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KoreaCityInfo-test-apk
+          path: KoreaCityInfo-test.apk
+
+      # On main, publish the APK as the "test-latest" release so it can be downloaded directly on a phone
+      - name: Publish test release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete test-latest --yes --cleanup-tag || true
+          gh release create test-latest KoreaCityInfo-test.apk \
+            --target "$GITHUB_SHA" --prerelease \
+            --title "Android test build #${GITHUB_RUN_NUMBER}" \
+            --notes "Test APK built from ${GITHUB_SHA::7}. Download KoreaCityInfo-test.apk on your phone and install it (allow 'Install unknown apps')."

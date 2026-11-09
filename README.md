@@ -51,14 +51,24 @@ npm start
 
 ### 안드로이드 앱 (Capacitor)
 
-Android Studio와 JDK 21이 필요합니다.
+#### 스마트폰에 테스트 APK 설치
+
+`main`에 변경이 반영되면 GitHub Actions(`.github/workflows/android.yml`)가 APK를 만들어 **Releases → test-latest**에 올립니다.
+
+1. 스마트폰 브라우저로 `https://github.com/eineye/KoreaCityInfo/releases/tag/test-latest`를 엽니다.
+2. `KoreaCityInfo-test.apk`를 내려받아 엽니다.
+3. "출처를 알 수 없는 앱 설치"를 허용하고 설치합니다.
+
+앱 안에 웹 파일이 들어 있어 웹 주소에 접속하지 않고 동작합니다. 유튜브 영상과 외부 링크는 인터넷이 필요합니다.
+새 빌드는 기존 앱 위에 그대로 덮어 설치됩니다. 테스트 서명 키 `android/app/debug-test.keystore`를 함께 쓰기 때문입니다.
+이 키는 테스트 전용이고, Play 스토어 출시용으로는 별도의 비공개 키를 만들어야 합니다.
+
+#### 직접 빌드 (Android Studio)
+
+Android Studio와 JDK 21이 필요합니다. `www/` 내용을 수정한 뒤에는 sync를 다시 실행합니다.
 
 ```bash
 npm install
-```
-
-```bash
-npm run android:init
 ```
 
 ```bash
@@ -69,7 +79,6 @@ npm run android:sync
 npm run android:open
 ```
 
-Android Studio에서 실행하거나 서명된 AAB를 만들어 Play 스토어에 올립니다. `www/` 내용을 수정한 뒤에는 `npm run android:sync`를 다시 실행합니다.
 앱에서 관리자 메뉴를 숨기려면 `www/js/config.js`의 `showAdminInApp`을 `false`로 바꿉니다.
 
 ## Supabase 전환 (무료 플랜)
