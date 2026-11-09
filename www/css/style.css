@@ -238,10 +238,10 @@ fieldset.field legend { padding: 0; margin-bottom: 6px; }
 .drawer-auth { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .drawer-user { font-size: 13px; font-weight: 600; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .drawer-label { font-size: 12.5px; font-weight: 700; color: var(--muted); padding: 6px 10px; text-transform: uppercase; letter-spacing: .02em; }
-.drawer-provs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 6px; }
+.drawer-provs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 0 6px; }
 .drawer-prov {
-  padding: 8px 10px; border-radius: 8px; text-decoration: none; color: var(--text); font-size: 13.5px; font-weight: 500;
-  border-left: 3px solid var(--c); background: var(--surface-2); line-height: 1.25; overflow-wrap: anywhere;
+  padding: 8px 8px; border-radius: 8px; text-decoration: none; color: var(--text); font-size: 12.5px; font-weight: 500;
+  border-left: 3px solid var(--c); background: var(--surface-2); line-height: 1.25; overflow-wrap: break-word;
 }
 .drawer-prov:hover { color: var(--brand); }
 .drawer-prov.on { background: var(--brand); color: #fff; }
@@ -280,3 +280,9 @@ fieldset.field legend { padding: 0; margin-bottom: 6px; }
   .section-menu a .ico { font-size: 18px; }
   .section-menu .count { position: absolute; top: 3px; right: 4px; padding: 0 6px; font-size: 10.5px; }
 }
+
+/* ---------- logo ---------- */
+.brand-logo { background: #fff; border-radius: 10px; padding: 2px; flex: none; }
+.drawer-home { display: block; flex: 1; }
+.drawer-home img { display: block; height: 76px; width: auto; max-width: 100%; border-radius: 8px; }
+.auth-logo { display: block; width: min(240px, 80%); margin: 0 auto 4px; border-radius: 10px; }

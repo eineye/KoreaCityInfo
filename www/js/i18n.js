@@ -3,7 +3,7 @@ import { CONFIG } from './config.js';
 const STRINGS = {
   en: {
     overview: 'Overview', selectRegion: 'Select a region', regionMenu: 'Region menu', allOf: 'All of {r}',
-    tagline: 'Discover the cities and provinces of Korea',
+    tagline: 'Discover Local Korea',
     menu: 'Menu', home: 'Korea Map', mayors: "Mayor's Greetings", festivals: 'Festivals', investment: 'Investment',
     youtube: 'YouTube', facebook: 'Facebook', x: 'X', language: 'Language',
     login: 'Log in', logout: 'Log out', signup: 'Sign up', admin: 'Admin',
@@ -29,7 +29,7 @@ const STRINGS = {
   },
   ko: {
     overview: '지역 소개', selectRegion: '지역 선택', regionMenu: '지역 메뉴', allOf: '{r} 전체',
-    tagline: '대한민국의 도시와 지역을 만나보세요',
+    tagline: '한국의 지역을 만나보세요',
     menu: '메뉴', home: '한국 지도', mayors: '단체장 인사말', festivals: '축제', investment: '투자유치',
     youtube: '유튜브', facebook: '페이스북', x: 'X', language: '언어',
     login: '로그인', logout: '로그아웃', signup: '회원가입', admin: '관리자',
