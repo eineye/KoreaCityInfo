@@ -113,7 +113,7 @@ function buildDrawer() {
 
   $('#drawer').replaceChildren(...[
     h('div', { class: 'drawer-head' },
-      h('a', { href: '#/', class: 'drawer-home', onclick: close }, '🗺️ ', CONFIG.appName),
+      h('a', { href: '#/', class: 'drawer-home', onclick: close, 'aria-label': CONFIG.appName }, h('img', { src: 'assets/logo.jpg', alt: CONFIG.appName })),
       h('button', { class: 'icon-btn', 'aria-label': t('close'), onclick: close }, '✕')),
     top,
     h('div', { class: 'drawer-sep' }),
@@ -319,6 +319,7 @@ function authForm(title, fields, submit, footer) {
     const data = Object.fromEntries(new FormData(form));
     try { await submit(data); } catch (ex) { err.textContent = t(ex.message); }
   } },
+  h('img', { class: 'auth-logo', src: 'assets/logo.jpg', alt: CONFIG.appName }),
   h('h1', {}, title),
   store.backend === 'local' ? h('p', { class: 'notice' }, t('testNotice')) : null,
   fields.map(([name, type]) => h('label', {}, t(name), h('input', { class: 'input', name, type, required: true, autocomplete: type === 'password' ? 'current-password' : 'username' }))),
