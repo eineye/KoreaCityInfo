@@ -43,9 +43,10 @@ npm start
 
 → http://localhost:8080 (빌드 과정 없음. `www/`를 아무 정적 서버로 열어도 됩니다)
 
-### 웹 배포 (Cloudflare Pages)
+### 웹 배포
 
-Build command는 비워두고, Build output directory를 `www`로 지정합니다.
+- **GitHub Pages**: 저장소 Settings → Pages → Source를 **GitHub Actions**로 지정하면, `main`에 push될 때마다 `.github/workflows/pages.yml`이 `www/`를 배포합니다.
+- **Cloudflare Pages**: Build command는 비워두고, Build output directory를 `www`로 지정합니다.
 
 ### 안드로이드 앱 (Capacitor)
 
