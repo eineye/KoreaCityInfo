@@ -53,6 +53,14 @@ npm start
 - **GitHub Pages**: 저장소 Settings → Pages → Source를 **GitHub Actions**로 지정하면, `main`에 push될 때마다 `.github/workflows/pages.yml`이 `www/`를 배포합니다.
 - **Cloudflare Pages**: Build command는 비워두고, Build output directory를 `www`로 지정합니다.
 
+### 다른 호스팅으로 옮기기
+
+`main`이 바뀔 때마다 `.github/workflows/package.yml`이 압축 파일을 만들어 **Releases → site-package**에 올립니다.
+메일에 압축 파일을 첨부하면 보안 정책으로 막히는 경우가 많으니, 아래 링크를 전달하세요.
+
+- 웹 파일만 (호스팅 웹 루트에 압축을 풀어 업로드): https://github.com/eineye/KoreaCityInfo/releases/download/site-package/KoreaCityInfo-web.zip
+- 전체 프로젝트: https://github.com/eineye/KoreaCityInfo/releases/download/site-package/KoreaCityInfo-full.zip
+
 ### 안드로이드 앱 (Capacitor)
 
 #### 스마트폰에 테스트 APK 설치
