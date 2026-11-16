@@ -1,0 +1,38 @@
+name: Publish download packages
+
+# Publishes two ZIP files as the "site-package" release so they can be shared as links
+# (e-mail providers often block ZIP attachments that contain .js files):
+#   KoreaCityInfo-web.zip  - contents of www/ (upload to any static web host)
+#   KoreaCityInfo-full.zip - the whole project
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: package
+  cancel-in-progress: true
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ZIP files
+        run: |
+          git archive --format=zip -o KoreaCityInfo-web.zip HEAD:www
+          git archive --format=zip --prefix=KoreaCityInfo/ -o KoreaCityInfo-full.zip HEAD
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete site-package --yes --cleanup-tag || true
+          gh release create site-package KoreaCityInfo-web.zip KoreaCityInfo-full.zip \
+            --target "$GITHUB_SHA" --latest=false \
+            --title "Download packages (${GITHUB_SHA::7})" \
+            --notes "KoreaCityInfo-web.zip: upload its contents to the web root of any static host. KoreaCityInfo-full.zip: the whole project (source, Android app, scripts, docs)."
